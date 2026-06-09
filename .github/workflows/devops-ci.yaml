@@ -1,0 +1,28 @@
+name: DevOps GitHub Actions CI-CD
+
+# जेव्हा जेव्हा मेन (main) ब्रांचवर कोड पुश होईल, तेव्हा हा पाईपलाईन रन होईल
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # १. गिटहबवरून तुमचा लेटेस्ट कोड घेऊन येणे
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # २. डॉकर हब (Docker Hub) मध्ये लॉगइन करणे
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    # ३. डॉकर इमेज बिल्ड करणे आणि ती डॉकर हबवर पुश करणे
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest .
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest
