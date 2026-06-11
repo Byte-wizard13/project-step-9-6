@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "main" ]
 
+# 🟢 हा तो नवीन भाग आहे जो आपण जोडला आहे (याने पिवळी चेतावणी निघून जाईल)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -26,15 +30,14 @@ jobs:
         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest .
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest
 
-    # ४. AWS EC2 सर्व्हरवर नवीन इमेज डिप्लॉय करणे (हा नवीन भाग आहे!)
+    # ४. AWS EC2 सर्व्हरवर नवीन इमेज डिप्लॉय करणे
     - name: Deploy to AWS EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.AWS_HOST }} # गिटहब सिक्रेट्समधील नवीन IP इथे मॅच होईल
-        username: ubuntu              # AWS चा डीफॉल्ट युझरनेम
-        key: ${{ secrets.AWS_PRIVATE_KEY }} # तुमचा AWS चा .pem की (पासवर्ड)
+        host: ${{ secrets.AWS_HOST }}
+        username: ubuntu
+        key: ${{ secrets.AWS_PRIVATE_KEY }}
         script: |
-          # जुना कंटेनर बंद करणे आणि नवीन इमेज रन करणे
           docker stop my-web-app || true
           docker rm my-web-app || true
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest
