@@ -4,10 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-# 🟢 हा तो नवीन भाग आहे जो आपण जोडला आहे (याने पिवळी चेतावणी निघून जाईल)
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -24,7 +20,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # ३. डॉकर इमेज बिल्ड करणे आणि पुश करणे
+    # ३. डॉकर इमेज इमेज बिल्ड करणे आणि पुश करणे
     - name: Build and Push Docker Image
       run: |
         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest .
