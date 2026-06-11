@@ -20,11 +20,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # ३. डॉकर इमेज इमेज बिल्ड करणे आणि पुश करणे
+    # ३. डॉकर इमेज बिल्ड करणे आणि पुश करणे
     - name: Build and Push Docker Image
       run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest .
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest
+        docker build -t kgs1356/my-devops-app:latest .
+        docker push kgs1356/my-devops-app:latest
 
     # ४. AWS EC2 सर्व्हरवर नवीन इमेज डिप्लॉय करणे
     - name: Deploy to AWS EC2
@@ -36,5 +36,5 @@ jobs:
         script: |
           docker stop my-web-app || true
           docker rm my-web-app || true
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest
-          docker run -d --name my-web-app -p 80:3000 ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest
+          docker pull kgs1356/my-devops-app:latest
+          docker run -d --name my-web-app -p 80:3000 kgs1356/my-devops-app:latest
