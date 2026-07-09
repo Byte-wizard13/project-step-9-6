@@ -1,40 +1,29 @@
-name: DevOps GitHub Actions CI-CD
+name: Docker Hub CI-CD Pipeline
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      # १. गिटहबवरून लेटेस्ट कोड घेऊन येणे
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    # १. कोड रनर सर्व्हरवर घेणे
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      # २. डॉकर हब मध्ये लॉगइन करणे
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+    # २. Docker Hub लॉगिन करणे
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # ३. डॉकर इमेज बिल्ड करणे आणि पुश करणे
-      - name: Build and Push Docker Image
-        run: |
-          docker build -t kgs1356/my-devops-app:latest .
-          docker push kgs1356/my-devops-app:latest
-
-      # ४. AWS EC2 सर्व्हरवर नवीन इमेज डिप्लॉय करणे
-      - name: Deploy to AWS EC2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.AWS_PRIVATE_KEY }}
-          script: |
-            docker stop my-web-app || true
-            docker rm my-web-app || true
-            docker pull kgs1356/my-devops-app:latest
-            docker run -d --name my-web-app -p 80:3000 kgs1356/my-devops-app:latest
+    # ३. Docker Image बिल्ड करून पुश करणे
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: byte-wizard13/my-devops-app:latest
